@@ -1,8 +1,8 @@
-// Mobile Participant Logic - Supports GitHub Pages (WSS/MQTT) & Local Node.js (Socket.IO)
+// Mobile Participant Logic - Supports GitHub Pages (WSS/MQTT EMQX) & Local Node.js (Socket.IO)
 
 (function() {
   const urlParams = new URLSearchParams(window.location.search);
-  const roomCode = urlParams.get('room') || 'DEFAULT';
+  const roomCode = urlParams.get('room') || 'EVENT-1';
 
   // Elements
   const roomLabel = document.getElementById('roomLabel');
@@ -19,7 +19,7 @@
   const winnerPlace = document.getElementById('winnerPlace');
   const winnerName = document.getElementById('winnerName');
 
-  roomLabel.textContent = roomCode;
+  if (roomLabel) roomLabel.textContent = roomCode;
 
   // Sound manager instance for phone
   const audioCtx = window.AudioContext || window.webkitAudioContext ? new (window.AudioContext || window.webkitAudioContext)() : null;
@@ -64,7 +64,6 @@
     joinedSection.style.display = 'flex';
 
     userAvatar.textContent = getInitials(user.name);
-    userAvatar.style.background = 'linear-gradient(135deg, #00f2fe, #9d4edd)';
     userNamePreview.textContent = user.name;
   }
 
@@ -73,7 +72,7 @@
     joinedSection.style.display = 'none';
     winnerSection.style.display = 'flex';
 
-    winnerName.textContent = currentUser.name;
+    winnerName.textContent = currentUser ? currentUser.name : '';
     const medals = { 1: '🥇 1 МЕСТО (Золото)', 2: '🥈 2 МЕСТО (Серебро)', 3: '🥉 3 МЕСТО (Бронза)' };
     winnerPlace.textContent = medals[winnerData.place] || `🏆 ${winnerData.place} МЕСТО`;
 
@@ -95,9 +94,36 @@
     showJoinedState(currentUser);
   }
 
-  // Real-time communication
+  // Real-time communication (Fast EMQX WSS Broker)
   let mqttClient = null;
   let socket = null;
+  let pendingUserData = null;
+
+  function doPublish(data) {
+    if (!data) return;
+    const payload = JSON.stringify(data);
+    if (socket) {
+      socket.emit('participant_join', data);
+    }
+    if (mqttClient && mqttClient.connected) {
+      mqttClient.publish(`qrlotto/${roomCode}/join`, payload, { qos: 1 });
+      mqttClient.publish(`qrlotto/EVENT-1/join`, payload, { qos: 1 });
+      mqttClient.publish(`qrlotto/all/join`, payload, { qos: 1 });
+    } else {
+      pendingUserData = data;
+    }
+  }
+
+  window.resendJoin = function() {
+    if (currentUser) {
+      doPublish(currentUser);
+      const btn = document.getElementById('resendBtn');
+      if (btn) {
+        btn.textContent = '✓ Отправлено на экран!';
+        setTimeout(() => { btn.textContent = '🔄 Я не на экране? Нажмите здесь'; }, 2000);
+      }
+    }
+  };
 
   function initRealtime() {
     if (typeof io !== 'undefined') {
@@ -106,7 +132,7 @@
     }
 
     if (typeof mqtt !== 'undefined') {
-      const brokerUrl = 'wss://broker.hivemq.com:8884/mqtt';
+      const brokerUrl = 'wss://broker.emqx.io:8084/mqtt';
       const clientId = 'lottery_user_' + Math.random().toString(16).substr(2, 8);
 
       mqttClient = mqtt.connect(brokerUrl, {
@@ -120,11 +146,19 @@
 
       mqttClient.on('connect', () => {
         mqttClient.subscribe(winnerTopic, { qos: 1 });
+        mqttClient.subscribe(`qrlotto/+/winner`, { qos: 1 });
+
+        if (pendingUserData) {
+          doPublish(pendingUserData);
+          pendingUserData = null;
+        } else if (currentUser) {
+          doPublish(currentUser);
+        }
       });
 
       mqttClient.on('message', (topic, message) => {
         try {
-          if (topic === winnerTopic) {
+          if (topic.endsWith('/winner')) {
             const data = JSON.parse(message.toString());
             if (data && data.winners && currentUser) {
               const myWin = data.winners.find(w => 
@@ -163,35 +197,12 @@
       localStorage.setItem(storageKey, JSON.stringify(userData));
     } catch(e) {}
 
-    // Send to Big Screen
-    function send() {
-      const joinTopic = `qrlotto/${roomCode}/join`;
-      const payload = JSON.stringify(userData);
-      if (socket) {
-        socket.emit('participant_join', userData);
-      }
-      if (mqttClient && mqttClient.connected) {
-        mqttClient.publish(joinTopic, payload, { qos: 1 });
-        mqttClient.publish('qrlotto/all/join', payload, { qos: 1 });
-      }
-    }
-
-    send();
-    // Retry in 1 second to ensure delivery
-    setTimeout(send, 1000);
+    doPublish(userData);
+    setTimeout(() => doPublish(userData), 800);
+    setTimeout(() => doPublish(userData), 2000);
 
     showJoinedState(userData);
   });
-
-  // Re-sync if already joined
-  if (currentUser) {
-    setTimeout(() => {
-      if (mqttClient && mqttClient.connected) {
-        mqttClient.publish(`qrlotto/${roomCode}/join`, JSON.stringify(currentUser), { qos: 1 });
-        mqttClient.publish('qrlotto/all/join', JSON.stringify(currentUser), { qos: 1 });
-      }
-    }, 1500);
-  }
 
   initRealtime();
 })();

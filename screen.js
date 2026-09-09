@@ -207,9 +207,9 @@
       return;
     }
 
-    // GitHub Pages mode: Public MQTT over WSS
+    // GitHub Pages mode: Public MQTT over WSS (EMQX Cloud Broker)
     if (typeof mqtt !== 'undefined') {
-      const brokerUrl = 'wss://broker.hivemq.com:8884/mqtt';
+      const brokerUrl = 'wss://broker.emqx.io:8084/mqtt';
       const clientId = 'lottery_screen_' + Math.random().toString(16).substr(2, 8);
       connStatus.textContent = 'Подключение...';
 
@@ -220,14 +220,14 @@
         reconnectPeriod: 2000
       });
 
-      const joinTopic = `qrlotto/${roomCode}/join`;
-      const stateTopic = `qrlotto/${roomCode}/state`;
-
       mqttClient.on('connect', () => {
         connDot.classList.add('online');
-        connStatus.textContent = 'Онлайн (WSS Cloud)';
+        connStatus.textContent = 'Онлайн (Cloud WSS)';
         mqttClient.subscribe(`qrlotto/${roomCode}/join`, { qos: 1 });
         mqttClient.subscribe('qrlotto/+/join', { qos: 1 });
+        mqttClient.subscribe('qrlotto/EVENT-1/join', { qos: 1 });
+        mqttClient.subscribe('qrlotto/DEFAULT/join', { qos: 1 });
+        mqttClient.subscribe('qrlotto/all/join', { qos: 1 });
       });
 
       mqttClient.on('error', (err) => {
