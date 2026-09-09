@@ -1,13 +1,14 @@
 :root {
-  --bg-color: #0b0f19;
-  --panel-bg: rgba(18, 26, 44, 0.85);
-  --panel-border: rgba(255, 255, 255, 0.1);
-  --accent-cyan: #00f2fe;
-  --accent-purple: #9d4edd;
-  --accent-gold: #ffbe0b;
-  --accent-green: #10b981;
-  --text-main: #f8fafc;
-  --text-muted: #94a3b8;
+  --ey-dark: #2E2E38;
+  --ey-darker: #1A1A22;
+  --ey-panel-bg: rgba(46, 46, 56, 0.9);
+  --ey-panel-border: rgba(255, 255, 255, 0.12);
+  --ey-blue: #188CE5;
+  --ey-yellow: #FFE600;
+  --ey-yellow-hover: #ffd900;
+  --ey-green: #10b981;
+  --text-main: #FFFFFF;
+  --text-muted: #B4B4C2;
   --font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
 }
 
@@ -19,10 +20,10 @@
 }
 
 body {
-  background-color: var(--bg-color);
+  background-color: var(--ey-darker);
   background-image: 
-    radial-gradient(circle at 20% 10%, rgba(157, 78, 221, 0.25) 0%, transparent 50%),
-    radial-gradient(circle at 80% 90%, rgba(0, 242, 254, 0.18) 0%, transparent 50%);
+    radial-gradient(circle at 15% 12%, rgba(24, 140, 229, 0.2) 0%, transparent 50%),
+    radial-gradient(circle at 85% 88%, rgba(255, 230, 0, 0.15) 0%, transparent 50%);
   color: var(--text-main);
   font-family: var(--font-family);
   min-height: 100vh;
@@ -34,9 +35,9 @@ body {
 }
 
 .mobile-card {
-  background: var(--panel-bg);
+  background: var(--ey-panel-bg);
   backdrop-filter: blur(20px);
-  border: 1px solid var(--panel-border);
+  border: 1px solid var(--ey-panel-border);
   border-radius: 28px;
   padding: 32px 24px;
   width: 100%;
@@ -54,7 +55,24 @@ body {
   left: 0;
   right: 0;
   height: 4px;
-  background: linear-gradient(90deg, var(--accent-purple), var(--accent-cyan));
+  background: linear-gradient(90deg, var(--ey-blue), var(--ey-yellow));
+}
+
+.header-brand-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.m-ey-logo-top {
+  background: var(--ey-yellow);
+  color: #1A1A22;
+  font-weight: 900;
+  font-size: 14px;
+  padding: 4px 10px;
+  border-radius: 6px;
+  letter-spacing: 0.5px;
 }
 
 .event-badge {
@@ -63,27 +81,23 @@ body {
   gap: 6px;
   font-size: 12px;
   font-weight: 700;
-  color: var(--accent-cyan);
+  color: var(--ey-yellow);
   padding: 5px 12px;
   border-radius: 20px;
-  background: rgba(0, 242, 254, 0.1);
-  border: 1px solid rgba(0, 242, 254, 0.2);
-  margin-bottom: 20px;
+  background: rgba(255, 230, 0, 0.1);
+  border: 1px solid rgba(255, 230, 0, 0.25);
 }
 
 .card-icon {
-  font-size: 48px;
+  font-size: 44px;
   margin-bottom: 12px;
-  animation: float 3s ease-in-out infinite;
 }
 
 .title {
   font-size: 24px;
   font-weight: 800;
   margin-bottom: 8px;
-  background: linear-gradient(135deg, #ffffff 0%, #cbd5e1 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+  color: #ffffff;
 }
 
 .subtitle {
@@ -110,15 +124,15 @@ body {
 
 .input-field label {
   font-size: 13px;
-  font-weight: 600;
+  font-weight: 700;
   color: var(--text-muted);
 }
 
 .input-field input {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid var(--panel-border);
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid var(--ey-panel-border);
   border-radius: 14px;
-  padding: 14px 16px;
+  padding: 15px 16px;
   font-size: 16px;
   color: #ffffff;
   outline: none;
@@ -127,23 +141,29 @@ body {
 }
 
 .input-field input:focus {
-  border-color: var(--accent-cyan);
-  background: rgba(255, 255, 255, 0.08);
-  box-shadow: 0 0 16px rgba(0, 242, 254, 0.25);
+  border-color: var(--ey-yellow);
+  background: rgba(0, 0, 0, 0.5);
+  box-shadow: 0 0 16px rgba(255, 230, 0, 0.25);
 }
 
+/* EY Yellow Action Button */
 .submit-btn {
-  background: linear-gradient(135deg, var(--accent-cyan) 0%, var(--accent-purple) 100%);
+  background: linear-gradient(135deg, var(--ey-yellow) 0%, #ffd900 100%);
   border: none;
   border-radius: 16px;
-  color: #ffffff;
+  color: #1A1A22;
   padding: 16px;
-  font-size: 16px;
-  font-weight: 800;
+  font-size: 17px;
+  font-weight: 900;
   cursor: pointer;
-  box-shadow: 0 10px 24px rgba(0, 242, 254, 0.3);
+  box-shadow: 0 8px 24px rgba(255, 230, 0, 0.35);
   transition: all 0.2s;
   width: 100%;
+}
+
+.submit-btn:hover {
+  background: #ffffff;
+  color: #1A1A22;
 }
 
 .submit-btn:active {
@@ -151,7 +171,7 @@ body {
 }
 
 .submit-btn:disabled {
-  opacity: 0.6;
+  opacity: 0.5;
   cursor: not-allowed;
 }
 
@@ -173,6 +193,8 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
+  background: linear-gradient(135deg, var(--ey-blue), #0d6efd) !important;
+  color: #ffffff;
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
 }
 
@@ -182,11 +204,6 @@ body {
   color: #ffffff;
 }
 
-.user-contact-preview {
-  font-size: 14px;
-  color: var(--accent-cyan);
-}
-
 .pulse-hint {
   display: flex;
   align-items: center;
@@ -194,18 +211,18 @@ body {
   font-size: 14px;
   color: var(--text-muted);
   margin-top: 10px;
-  background: rgba(255, 255, 255, 0.04);
+  background: rgba(255, 255, 255, 0.05);
   padding: 10px 18px;
   border-radius: 20px;
-  border: 1px solid var(--panel-border);
+  border: 1px solid var(--ey-panel-border);
 }
 
 .live-dot {
   width: 10px;
   height: 10px;
   border-radius: 50%;
-  background: var(--accent-green);
-  box-shadow: 0 0 10px var(--accent-green);
+  background: var(--ey-green);
+  box-shadow: 0 0 10px var(--ey-green);
   animation: blink 1.5s infinite;
 }
 
@@ -221,34 +238,32 @@ body {
 
 .winner-crown {
   font-size: 64px;
-  filter: drop-shadow(0 0 20px rgba(255, 190, 11, 0.8));
+  filter: drop-shadow(0 0 20px rgba(255, 230, 0, 0.8));
   animation: float 2s infinite ease-in-out;
 }
 
 .winner-title {
-  font-size: 26px;
+  font-size: 28px;
   font-weight: 900;
-  background: linear-gradient(135deg, #ffffff 0%, var(--accent-gold) 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+  color: var(--ey-yellow);
 }
 
 .winner-place-pill {
   font-size: 18px;
-  font-weight: 800;
-  color: #0b0f19;
-  background: linear-gradient(135deg, var(--accent-gold) 0%, #ff7b00 100%);
+  font-weight: 900;
+  color: #1A1A22;
+  background: var(--ey-yellow);
   padding: 8px 24px;
   border-radius: 30px;
-  box-shadow: 0 8px 20px rgba(255, 190, 11, 0.5);
+  box-shadow: 0 8px 20px rgba(255, 230, 0, 0.4);
   margin-top: 6px;
 }
 
 /* Mobile EY Academy Contact Card */
 .m-ey-card {
   margin-top: 20px;
-  background: rgba(15, 23, 42, 0.75);
-  border: 1px solid rgba(255, 230, 0, 0.3);
+  background: rgba(30, 30, 38, 0.85);
+  border: 1px solid rgba(255, 230, 0, 0.35);
   border-radius: 20px;
   padding: 16px;
   width: 100%;
@@ -268,8 +283,8 @@ body {
 }
 
 .m-ey-logo {
-  background: #ffe600;
-  color: #0b0f19;
+  background: var(--ey-yellow);
+  color: #1A1A22;
   font-weight: 900;
   font-size: 13px;
   padding: 2px 8px;
@@ -285,7 +300,7 @@ body {
 .m-ey-admin {
   font-size: 16px;
   font-weight: 800;
-  color: #ffe600;
+  color: #ffffff;
   margin-bottom: 14px;
 }
 
@@ -319,8 +334,8 @@ body {
 .m-ey-btn.web {
   background: rgba(255, 230, 0, 0.15);
   border-color: rgba(255, 230, 0, 0.4);
-  color: #ffe600;
-  font-weight: 700;
+  color: var(--ey-yellow);
+  font-weight: 800;
 }
 
 @keyframes float {

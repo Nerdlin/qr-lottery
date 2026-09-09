@@ -28,16 +28,16 @@
   const podiumModal = document.getElementById('podiumModal');
   const podiumGrid = document.getElementById('podiumGrid');
 
-  // Vibrant avatar color palette
+  // EY Brand Avatar color palette
   const AVATAR_GRADIENTS = [
-    'linear-gradient(135deg, #f43f5e, #e11d48)',
-    'linear-gradient(135deg, #8b5cf6, #6d28d9)',
-    'linear-gradient(135deg, #06b6d4, #0891b2)',
-    'linear-gradient(135deg, #10b981, #059669)',
-    'linear-gradient(135deg, #f59e0b, #d97706)',
-    'linear-gradient(135deg, #ec4899, #be185d)',
-    'linear-gradient(135deg, #3b82f6, #1d4ed8)',
-    'linear-gradient(135deg, #14b8a6, #0f766e)'
+    'linear-gradient(135deg, #188CE5, #025ca5)',
+    'linear-gradient(135deg, #38bdf8, #188CE5)',
+    'linear-gradient(135deg, #3E3E4C, #2E2E38)',
+    'linear-gradient(135deg, #0ea5e9, #0284c7)',
+    'linear-gradient(135deg, #475569, #1e293b)',
+    'linear-gradient(135deg, #2563eb, #1d4ed8)',
+    'linear-gradient(135deg, #0284c7, #188CE5)',
+    'linear-gradient(135deg, #525263, #3E3E4C)'
   ];
 
   // Room Code Generator / Resolver (Stable across refreshes!)
