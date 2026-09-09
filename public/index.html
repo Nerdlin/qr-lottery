@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>QR-Лотерея | Большой экран</title>
+  <link rel="stylesheet" href="screen.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <!-- Header -->
+  <header class="header">
+    <div class="logo-group">
+      <div class="logo-icon">🎰</div>
+      <div class="title-editable" contenteditable="true" title="Нажмите, чтобы изменить название">РОЗЫГРЫШ ПРИЗОВ</div>
+    </div>
+
+    <div class="header-status">
+      <div class="room-badge">Комната: <span id="roomCode">...</span></div>
+      <div class="conn-badge">
+        <span class="conn-dot" id="connDot"></span>
+        <span id="connStatus">Подключение...</span>
+      </div>
+      <div class="header-actions">
+        <button class="icon-btn" id="soundToggleBtn" onclick="toggleSound()">🔊 Звук: Вкл</button>
+        <button class="icon-btn" onclick="toggleFullscreen()">⛶ Во весь экран</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="main-container">
+    <!-- Left Sidebar: QR & Controls -->
+    <aside class="sidebar">
+      <!-- QR Card -->
+      <div class="qr-card">
+        <div class="qr-title">Сканируйте для участия!</div>
+        <div class="qr-subtitle">Наведите камеру смартфона на QR-код</div>
+        <div class="qr-wrapper">
+          <div id="qrcode"></div>
+        </div>
+        <div class="qr-url-hint" id="qrUrlHint">Загрузка адреса...</div>
+      </div>
+
+      <!-- Stats Card -->
+      <div class="stats-card">
+        <div class="stats-row">
+          <span class="stats-label">Участники</span>
+          <div class="stats-value">
+            <span id="participantCount">0</span>
+            <span class="stats-target" id="targetCount">/ 50</span>
+          </div>
+        </div>
+        <div class="progress-bar-bg">
+          <div class="progress-bar-fill" id="progressBarFill"></div>
+        </div>
+
+        <button class="btn-primary-launch" id="launchBtn" disabled>
+          <span>🎲 Запустить розыгрыш</span>
+        </button>
+      </div>
+
+      <!-- Host Controls -->
+      <div class="host-tools">
+        <div class="host-tools-title">Панель ведущего</div>
+        <div class="tool-row">
+          <span>Цель участников:</span>
+          <input type="number" id="targetInput" class="tool-input" min="3" max="500" value="50">
+        </div>
+        <div class="tool-btn-group">
+          <button class="tool-btn" onclick="generateDemoParticipants(50)">⚡ +50 демо</button>
+          <button class="tool-btn" onclick="resetLottery()">🗑 Очистить</button>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Right Area: Participants Grid -->
+    <section class="content-area">
+      <div class="content-header">
+        <div class="section-title">
+          <span>👥 Список участников</span>
+        </div>
+      </div>
+
+      <!-- Empty State -->
+      <div class="empty-state" id="emptyState">
+        <div class="empty-icon">📱</div>
+        <h3>Ожидание первых участников...</h3>
+        <p>Отсканируйте QR-код слева со своего смартфона, чтобы появиться на экране.</p>
+      </div>
+
+      <!-- Dynamic Cards Grid -->
+      <div class="participants-grid" id="participantsGrid" style="display: none;"></div>
+    </section>
+  </main>
+
+  <!-- Countdown Overlay -->
+  <div class="countdown-overlay" id="countdownOverlay">
+    <div class="countdown-number" id="countdownNum">3</div>
+    <div class="countdown-text">Определяем победителей!</div>
+  </div>
+
+  <!-- Winners Podium Modal -->
+  <div class="modal-overlay" id="podiumModal">
+    <div class="podium-window">
+      <div class="podium-title">🎉 ПОЗДРАВЛЯЕМ ПОБЕДИТЕЛЕЙ! 🎉</div>
+      <div class="podium-subtitle">Счастливчики сегодняшнего розыгрыша</div>
+      
+      <div class="podium-grid" id="podiumGrid">
+        <!-- 3 places will be injected here -->
+      </div>
+
+      <button class="modal-close-btn" onclick="closePodium()">Закрыть окно</button>
+    </div>
+  </div>
+
+  <!-- Libraries -->
+  <script src="lib/qrcode.min.js"></script>
+  <script src="lib/confetti.browser.js"></script>
+  <script src="lib/mqtt.min.js"></script>
+  <!-- App Scripts -->
+  <script src="audio.js"></script>
+  <script src="screen.js"></script>
+</body>
+</html>

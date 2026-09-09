@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Участие в розыгрыше</title>
+  <link rel="stylesheet" href="join.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <div class="mobile-card">
+    <div class="event-badge">
+      <span>🎲</span>
+      <span>Комната: <b id="roomLabel">...</b></span>
+    </div>
+
+    <!-- 1. Input Form Section -->
+    <div id="formSection">
+      <div class="card-icon">🎟️</div>
+      <h1 class="title">Регистрация</h1>
+      <p class="subtitle">Введите ваше имя, чтобы карточка появилась на большом экране!</p>
+
+      <form id="joinForm">
+        <div class="form-group">
+          <div class="input-field">
+            <label for="nameInput">Ваше имя и фамилия *</label>
+            <input type="text" id="nameInput" placeholder="Например: Иван Иванов" required autocomplete="name" autofocus>
+          </div>
+        </div>
+
+        <button type="submit" class="submit-btn" id="submitBtn">
+          Участвовать в розыгрыше!
+        </button>
+      </form>
+    </div>
+
+    <!-- 2. Already Joined / Waiting Section -->
+    <div id="joinedSection" class="joined-box" style="display: none;">
+      <div class="user-badge-preview" id="userAvatar">ИИ</div>
+      <div class="user-name-preview" id="userNamePreview">Иван Иванов</div>
+
+      <div class="pulse-hint">
+        <span class="live-dot"></span>
+        <span>Вы в игре! Следите за экраном</span>
+      </div>
+      <p style="font-size: 13px; color: var(--text-muted); margin-top: 10px;">
+        Когда начнется розыгрыш, на большом экране запустится рандомайзер!
+      </p>
+    </div>
+
+    <!-- 3. Winner Announcement Section -->
+    <div id="winnerSection" class="winner-box" style="display: none;">
+      <div class="winner-crown">👑</div>
+      <h2 class="winner-title">ПОЗДРАВЛЯЕМ!</h2>
+      <p style="font-size: 16px; color: #fff;">Вы среди победителей розыгрыша!</p>
+      
+      <div class="winner-place-pill" id="winnerPlace">🥇 1 МЕСТО</div>
+      <div style="font-size: 20px; font-weight: 800; margin-top: 10px;" id="winnerName">Имя</div>
+
+      <p style="font-size: 13px; color: var(--text-muted); margin-top: 14px;">
+        Покажите этот экран ведущему мероприятия для получения приза!
+      </p>
+    </div>
+  </div>
+
+  <!-- Libraries -->
+  <script src="lib/confetti.browser.js"></script>
+  <script src="lib/mqtt.min.js"></script>
+  <!-- Join Logic -->
+  <script src="join.js"></script>
+</body>
+</html>
