@@ -65,14 +65,13 @@ body {
   margin-bottom: 20px;
 }
 
-.m-ey-logo-top {
-  background: var(--ey-yellow);
-  color: #1A1A22;
-  font-weight: 900;
-  font-size: 14px;
-  padding: 4px 10px;
-  border-radius: 6px;
-  letter-spacing: 0.5px;
+.m-ey-top-logo {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  object-fit: cover;
+  border: 1px solid rgba(255, 230, 0, 0.4);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
 }
 
 .event-badge {
@@ -282,13 +281,12 @@ body {
   margin-bottom: 8px;
 }
 
-.m-ey-logo {
-  background: var(--ey-yellow);
-  color: #1A1A22;
-  font-weight: 900;
-  font-size: 13px;
-  padding: 2px 8px;
-  border-radius: 4px;
+.m-ey-banner-logo {
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  object-fit: cover;
+  border: 1px solid rgba(255, 230, 0, 0.3);
 }
 
 .m-ey-hint {
