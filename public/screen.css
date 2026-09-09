@@ -691,6 +691,142 @@ body {
   color: var(--accent-cyan);
 }
 
+/* EY Academy Banner */
+.ey-contact-banner {
+  background: rgba(15, 23, 42, 0.7);
+  border: 1px solid rgba(255, 230, 0, 0.35);
+  border-radius: 20px;
+  padding: 20px 24px;
+  margin: 0 auto 28px auto;
+  max-width: 780px;
+  text-align: left;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4), inset 0 0 15px rgba(255, 230, 0, 0.05);
+  position: relative;
+  overflow: hidden;
+}
+
+.ey-contact-banner::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #ffe600, #ffbe0b);
+}
+
+.ey-banner-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  padding-bottom: 12px;
+  margin-bottom: 14px;
+}
+
+.ey-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.ey-logo-badge {
+  background: #ffe600;
+  color: #111827;
+  font-weight: 900;
+  font-size: 16px;
+  padding: 4px 10px;
+  border-radius: 6px;
+  letter-spacing: 0.5px;
+}
+
+.ey-brand-text {
+  font-size: 15px;
+  font-weight: 700;
+  color: #f8fafc;
+  letter-spacing: 0.3px;
+}
+
+.ey-site-btn {
+  background: rgba(255, 230, 0, 0.12);
+  color: #ffe600;
+  border: 1px solid rgba(255, 230, 0, 0.3);
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 700;
+  text-decoration: none;
+  transition: all 0.2s;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.ey-site-btn:hover {
+  background: #ffe600;
+  color: #111827;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px rgba(255, 230, 0, 0.3);
+}
+
+.ey-admin-label {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin-bottom: 10px;
+}
+
+.ey-contact-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 14px;
+}
+
+.ey-admin-person {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.ey-avatar-sm {
+  font-size: 18px;
+}
+
+.ey-admin-name {
+  font-size: 17px;
+  font-weight: 800;
+  color: #ffffff;
+}
+
+.ey-action-links {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.ey-pill-link {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #f1f5f9;
+  padding: 8px 14px;
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.2s;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.ey-pill-link:hover {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 230, 0, 0.5);
+  color: #ffe600;
+  transform: translateY(-1px);
+}
+
 .modal-close-btn {
   background: rgba(255, 255, 255, 0.1);
   border: 1px solid var(--panel-border);
