@@ -138,6 +138,10 @@
     renderParticipantCard(participant);
     updateStats();
 
+    try {
+      localStorage.setItem('lotto_participants_' + roomCode, JSON.stringify(participants));
+    } catch(e) {}
+
     if (window.sounds) window.sounds.playJoin();
 
     // Auto-roll if target reached and feature enabled
@@ -223,10 +227,10 @@
       mqttClient.on('connect', () => {
         connDot.classList.add('online');
         connStatus.textContent = 'Онлайн (Cloud WSS)';
+        mqttClient.subscribe(`qrlotto/${roomCode}/p/+`, { qos: 1 });
+        mqttClient.subscribe('qrlotto/+/p/+', { qos: 1 });
         mqttClient.subscribe(`qrlotto/${roomCode}/join`, { qos: 1 });
         mqttClient.subscribe('qrlotto/+/join', { qos: 1 });
-        mqttClient.subscribe('qrlotto/EVENT-1/join', { qos: 1 });
-        mqttClient.subscribe('qrlotto/DEFAULT/join', { qos: 1 });
         mqttClient.subscribe('qrlotto/all/join', { qos: 1 });
       });
 
@@ -464,6 +468,9 @@
       winners = [];
       participantsGrid.innerHTML = '';
       document.querySelectorAll('.grid-winner').forEach(el => el.classList.remove('grid-winner'));
+      try {
+        localStorage.removeItem('lotto_participants_' + roomCode);
+      } catch(e) {}
       updateStats();
       if (mqttClient && mqttClient.connected) {
         mqttClient.publish(`qrlotto/${roomCode}/winner`, JSON.stringify({ winners: [] }), { retain: true });
@@ -505,6 +512,22 @@
   launchBtn.addEventListener('click', () => {
     startLottery();
   });
+
+  // Restore saved participants
+  try {
+    const saved = localStorage.getItem('lotto_participants_' + roomCode);
+    if (saved) {
+      const list = JSON.parse(saved);
+      if (Array.isArray(list)) {
+        list.forEach(p => {
+          if (!participants.find(x => x.id === p.id || x.name.toLowerCase() === p.name.toLowerCase())) {
+            participants.push(p);
+            renderParticipantCard(p);
+          }
+        });
+      }
+    }
+  } catch(e) {}
 
   // Init
   updateStats();

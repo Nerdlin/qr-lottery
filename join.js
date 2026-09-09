@@ -106,8 +106,9 @@
       socket.emit('participant_join', data);
     }
     if (mqttClient && mqttClient.connected) {
+      // Retain per-participant so late-opening screens get them immediately!
+      mqttClient.publish(`qrlotto/${roomCode}/p/${data.id}`, payload, { qos: 1, retain: true });
       mqttClient.publish(`qrlotto/${roomCode}/join`, payload, { qos: 1 });
-      mqttClient.publish(`qrlotto/EVENT-1/join`, payload, { qos: 1 });
       mqttClient.publish(`qrlotto/all/join`, payload, { qos: 1 });
     } else {
       pendingUserData = data;
