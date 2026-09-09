@@ -40,14 +40,13 @@
     'linear-gradient(135deg, #14b8a6, #0f766e)'
   ];
 
-  // Room Code Generator / Resolver
+  // Room Code Generator / Resolver (Stable across refreshes!)
   const urlParams = new URLSearchParams(window.location.search);
-  let roomCode = urlParams.get('room');
-  if (!roomCode) {
-    roomCode = 'LOTTO-' + Math.floor(1000 + Math.random() * 9000);
-    const newUrl = window.location.pathname + '?room=' + roomCode;
-    window.history.replaceState({ path: newUrl }, '', newUrl);
-  }
+  let roomCode = urlParams.get('room') || localStorage.getItem('lotto_room_code') || 'EVENT-1';
+  localStorage.setItem('lotto_room_code', roomCode);
+
+  const newUrl = window.location.pathname + '?room=' + roomCode;
+  window.history.replaceState({ path: newUrl }, '', newUrl);
   roomCodeEl.textContent = roomCode;
 
   // Build join URL
@@ -227,7 +226,8 @@
       mqttClient.on('connect', () => {
         connDot.classList.add('online');
         connStatus.textContent = 'Онлайн (WSS Cloud)';
-        mqttClient.subscribe(joinTopic, { qos: 1 });
+        mqttClient.subscribe(`qrlotto/${roomCode}/join`, { qos: 1 });
+        mqttClient.subscribe('qrlotto/+/join', { qos: 1 });
       });
 
       mqttClient.on('error', (err) => {
@@ -244,7 +244,7 @@
       mqttClient.on('message', (topic, message) => {
         try {
           const payload = JSON.parse(message.toString());
-          if (topic === joinTopic) {
+          if (payload && payload.name) {
             addParticipant(payload);
           }
         } catch (e) {

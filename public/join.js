@@ -164,22 +164,34 @@
     } catch(e) {}
 
     // Send to Big Screen
-    const joinTopic = `qrlotto/${roomCode}/join`;
-    const payload = JSON.stringify(userData);
-
-    if (socket) {
-      socket.emit('participant_join', userData);
-    } else if (mqttClient && mqttClient.connected) {
-      mqttClient.publish(joinTopic, payload, { qos: 1 });
-    } else {
-      // If mqtt still connecting, retry momentarily
-      setTimeout(() => {
-        if (mqttClient) mqttClient.publish(joinTopic, payload, { qos: 1 });
-      }, 800);
+    function send() {
+      const joinTopic = `qrlotto/${roomCode}/join`;
+      const payload = JSON.stringify(userData);
+      if (socket) {
+        socket.emit('participant_join', userData);
+      }
+      if (mqttClient && mqttClient.connected) {
+        mqttClient.publish(joinTopic, payload, { qos: 1 });
+        mqttClient.publish('qrlotto/all/join', payload, { qos: 1 });
+      }
     }
+
+    send();
+    // Retry in 1 second to ensure delivery
+    setTimeout(send, 1000);
 
     showJoinedState(userData);
   });
+
+  // Re-sync if already joined
+  if (currentUser) {
+    setTimeout(() => {
+      if (mqttClient && mqttClient.connected) {
+        mqttClient.publish(`qrlotto/${roomCode}/join`, JSON.stringify(currentUser), { qos: 1 });
+        mqttClient.publish('qrlotto/all/join', JSON.stringify(currentUser), { qos: 1 });
+      }
+    }, 1500);
+  }
 
   initRealtime();
 })();
