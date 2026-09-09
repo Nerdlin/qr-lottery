@@ -53,7 +53,7 @@
   function getJoinUrl() {
     let base = window.location.href.split('?')[0];
     base = base.replace(/index\.html$/, '').replace(/\/$/, '');
-    return `${base}/join.html?room=${roomCode}`;
+    return `${base}/join.html?room=${roomCode}&v=5`;
   }
 
   const joinUrl = getJoinUrl();
@@ -211,50 +211,73 @@
       return;
     }
 
-    // GitHub Pages mode: Public MQTT over WSS (EMQX Cloud Broker)
+    // GitHub Pages mode: Multi-broker WSS with auto-fallback
     if (typeof mqtt !== 'undefined') {
-      const brokerUrl = 'wss://broker.emqx.io:8084/mqtt';
-      const clientId = 'lottery_screen_' + Math.random().toString(16).substr(2, 8);
-      connStatus.textContent = 'Подключение...';
+      const BROKERS = [
+        'wss://broker.emqx.io:8084/mqtt',
+        'wss://test.mosquitto.org:8081/mqtt'
+      ];
+      let brokerIdx = 0;
+      let connectTimer = null;
 
-      mqttClient = mqtt.connect(brokerUrl, {
-        clientId: clientId,
-        clean: true,
-        connectTimeout: 5000,
-        reconnectPeriod: 2000
-      });
+      function connectMqtt() {
+        const brokerUrl = BROKERS[brokerIdx];
+        const clientId = 'lottery_screen_' + Math.random().toString(16).substr(2, 8);
+        connStatus.textContent = 'Подключение...';
 
-      mqttClient.on('connect', () => {
-        connDot.classList.add('online');
-        connStatus.textContent = 'Онлайн (Cloud WSS)';
-        mqttClient.subscribe(`qrlotto/${roomCode}/p/+`, { qos: 1 });
-        mqttClient.subscribe('qrlotto/+/p/+', { qos: 1 });
-        mqttClient.subscribe(`qrlotto/${roomCode}/join`, { qos: 1 });
-        mqttClient.subscribe('qrlotto/+/join', { qos: 1 });
-        mqttClient.subscribe('qrlotto/all/join', { qos: 1 });
-      });
-
-      mqttClient.on('error', (err) => {
-        console.warn('MQTT Error:', err);
-        connDot.classList.remove('online');
-        connStatus.textContent = 'Ошибка сети';
-      });
-
-      mqttClient.on('close', () => {
-        connDot.classList.remove('online');
-        connStatus.textContent = 'Переподключение...';
-      });
-
-      mqttClient.on('message', (topic, message) => {
-        try {
-          const payload = JSON.parse(message.toString());
-          if (payload && payload.name) {
-            addParticipant(payload);
-          }
-        } catch (e) {
-          console.error('Failed to parse message', e);
+        if (mqttClient) {
+          try { mqttClient.end(true); } catch(e) {}
         }
-      });
+
+        mqttClient = mqtt.connect(brokerUrl, {
+          clientId: clientId,
+          clean: true,
+          connectTimeout: 4000,
+          reconnectPeriod: 3000
+        });
+
+        clearTimeout(connectTimer);
+        connectTimer = setTimeout(() => {
+          if (!mqttClient.connected) {
+            console.warn('Screen MQTT timeout, trying next broker...');
+            brokerIdx = (brokerIdx + 1) % BROKERS.length;
+            connectMqtt();
+          }
+        }, 4500);
+
+        mqttClient.on('connect', () => {
+          clearTimeout(connectTimer);
+          connDot.classList.add('online');
+          connStatus.textContent = 'Онлайн (Cloud WSS)';
+          mqttClient.subscribe(`qrlotto/${roomCode}/#`, { qos: 1 });
+          mqttClient.subscribe('qrlotto/+/join', { qos: 1 });
+          mqttClient.subscribe('qrlotto/all/#', { qos: 1 });
+        });
+
+        mqttClient.on('error', (err) => {
+          console.warn('MQTT Error:', err);
+          connDot.classList.remove('online');
+          connStatus.textContent = 'Сбой сети';
+        });
+
+        mqttClient.on('close', () => {
+          connDot.classList.remove('online');
+          connStatus.textContent = 'Переподключение...';
+        });
+
+        mqttClient.on('message', (topic, message) => {
+          try {
+            const payload = JSON.parse(message.toString());
+            if (payload && payload.name) {
+              addParticipant(payload);
+            }
+          } catch (e) {
+            console.error('Failed to parse message', e);
+          }
+        });
+      }
+
+      connectMqtt();
     }
   }
 
@@ -475,6 +498,17 @@
       if (mqttClient && mqttClient.connected) {
         mqttClient.publish(`qrlotto/${roomCode}/winner`, JSON.stringify({ winners: [] }), { retain: true });
       }
+    }
+  };
+
+  // Host Tool: Manual Participant Addition
+  window.promptAddParticipant = function() {
+    const name = prompt('Введите имя и фамилию участника:');
+    if (name && name.trim()) {
+      addParticipant({
+        id: 'manual_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4),
+        name: name.trim()
+      });
     }
   };
 

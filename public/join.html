@@ -3,9 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
   <title>Участие в розыгрыше</title>
   <link rel="icon" type="image/jpeg" href="ey-logo.jpg">
-  <link rel="stylesheet" href="join.css?v=3">
+  <link rel="stylesheet" href="join.css?v=20260909_05">
 </head>
 <body>
 
@@ -13,6 +16,14 @@
     <div class="header-brand-badge">
       <img src="ey-logo.jpg" alt="EY" class="m-ey-top-logo" width="34" height="34" style="width: 34px; height: 34px; max-width: 34px; max-height: 34px; object-fit: cover; border-radius: 8px; flex-shrink: 0;">
       <span style="font-weight: 800; font-size: 15px;">Academy of Business</span>
+    </div>
+
+    <!-- Real-time Connection Badge -->
+    <div>
+      <div class="m-conn-badge" id="mConnBadge">
+        <span class="m-conn-dot" id="mConnDot"></span>
+        <span id="mConnText">Подключение к экрану...</span>
+      </div>
     </div>
 
     <!-- 1. Input Form Section -->
@@ -78,6 +89,6 @@
   <script src="lib/confetti.browser.js"></script>
   <script src="lib/mqtt.min.js"></script>
   <!-- Join Logic -->
-  <script src="join.js"></script>
+  <script src="join.js?v=20260909_05"></script>
 </body>
 </html>

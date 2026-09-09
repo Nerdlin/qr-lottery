@@ -126,53 +126,102 @@
     }
   };
 
+  // Connection Status Elements
+  const mConnDot = document.getElementById('mConnDot');
+  const mConnText = document.getElementById('mConnText');
+
+  function updateConnUI(online, text) {
+    if (mConnDot) {
+      if (online) mConnDot.classList.add('online');
+      else mConnDot.classList.remove('online');
+    }
+    if (mConnText) mConnText.textContent = text;
+  }
+
   function initRealtime() {
     if (typeof io !== 'undefined') {
       socket = io();
+      socket.on('connect', () => updateConnUI(true, 'Подключено к экрану'));
+      socket.on('disconnect', () => updateConnUI(false, 'Переподключение...'));
       return;
     }
 
     if (typeof mqtt !== 'undefined') {
-      const brokerUrl = 'wss://broker.emqx.io:8084/mqtt';
-      const clientId = 'lottery_user_' + Math.random().toString(16).substr(2, 8);
+      const BROKERS = [
+        'wss://broker.emqx.io:8084/mqtt',
+        'wss://test.mosquitto.org:8081/mqtt'
+      ];
+      let brokerIdx = 0;
+      let failoverTimer = null;
 
-      mqttClient = mqtt.connect(brokerUrl, {
-        clientId: clientId,
-        clean: true,
-        connectTimeout: 5000,
-        reconnectPeriod: 2000
-      });
+      function connectMqtt() {
+        const brokerUrl = BROKERS[brokerIdx];
+        const clientId = 'lottery_user_' + Math.random().toString(16).substr(2, 8);
+        updateConnUI(false, 'Подключение к экрану...');
 
-      const winnerTopic = `qrlotto/${roomCode}/winner`;
-
-      mqttClient.on('connect', () => {
-        mqttClient.subscribe(winnerTopic, { qos: 1 });
-        mqttClient.subscribe(`qrlotto/+/winner`, { qos: 1 });
-
-        if (pendingUserData) {
-          doPublish(pendingUserData);
-          pendingUserData = null;
-        } else if (currentUser) {
-          doPublish(currentUser);
+        if (mqttClient) {
+          try { mqttClient.end(true); } catch(e) {}
         }
-      });
 
-      mqttClient.on('message', (topic, message) => {
-        try {
-          if (topic.endsWith('/winner')) {
-            const data = JSON.parse(message.toString());
-            if (data && data.winners && currentUser) {
-              const myWin = data.winners.find(w => 
-                (w.id && w.id === currentUser.id) || 
-                (w.name.toLowerCase() === currentUser.name.toLowerCase())
-              );
-              if (myWin) {
-                showWinnerState(myWin);
+        mqttClient = mqtt.connect(brokerUrl, {
+          clientId: clientId,
+          clean: true,
+          connectTimeout: 4000,
+          reconnectPeriod: 3000
+        });
+
+        // Failover if taking too long
+        clearTimeout(failoverTimer);
+        failoverTimer = setTimeout(() => {
+          if (!mqttClient.connected) {
+            brokerIdx = (brokerIdx + 1) % BROKERS.length;
+            connectMqtt();
+          }
+        }, 4500);
+
+        const winnerTopic = `qrlotto/${roomCode}/winner`;
+
+        mqttClient.on('connect', () => {
+          clearTimeout(failoverTimer);
+          updateConnUI(true, 'Подключено к экрану');
+          mqttClient.subscribe(winnerTopic, { qos: 1 });
+          mqttClient.subscribe(`qrlotto/+/winner`, { qos: 1 });
+
+          if (pendingUserData) {
+            doPublish(pendingUserData);
+            pendingUserData = null;
+          } else if (currentUser) {
+            doPublish(currentUser);
+          }
+        });
+
+        mqttClient.on('error', () => {
+          updateConnUI(false, 'Поиск сервера...');
+        });
+
+        mqttClient.on('close', () => {
+          updateConnUI(false, 'Переподключение...');
+        });
+
+        mqttClient.on('message', (topic, message) => {
+          try {
+            if (topic.endsWith('/winner')) {
+              const data = JSON.parse(message.toString());
+              if (data && data.winners && currentUser) {
+                const myWin = data.winners.find(w => 
+                  (w.id && w.id === currentUser.id) || 
+                  (w.name.toLowerCase() === currentUser.name.toLowerCase())
+                );
+                if (myWin) {
+                  showWinnerState(myWin);
+                }
               }
             }
-          }
-        } catch (e) {}
-      });
+          } catch (e) {}
+        });
+      }
+
+      connectMqtt();
     }
   }
 

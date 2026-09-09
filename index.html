@@ -3,9 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
   <title>QR-Лотерея | Большой экран</title>
   <link rel="icon" type="image/jpeg" href="ey-logo.jpg">
-  <link rel="stylesheet" href="screen.css?v=3">
+  <link rel="stylesheet" href="screen.css?v=20260909_05">
 </head>
 <body>
 
@@ -72,6 +75,7 @@
         </div>
         <div class="tool-btn-group">
           <button class="tool-btn" onclick="generateDemoParticipants(50)">⚡ +50 демо</button>
+          <button class="tool-btn" onclick="promptAddParticipant()">➕ Вручную</button>
           <button class="tool-btn" onclick="resetLottery()">🗑 Очистить</button>
         </div>
       </div>
@@ -153,7 +157,7 @@
   <script src="lib/confetti.browser.js"></script>
   <script src="lib/mqtt.min.js"></script>
   <!-- App Scripts -->
-  <script src="audio.js"></script>
-  <script src="screen.js"></script>
+  <script src="audio.js?v=20260909_05"></script>
+  <script src="screen.js?v=20260909_05"></script>
 </body>
 </html>
